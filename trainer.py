@@ -780,8 +780,9 @@ class Pipeline(LightningModule):
     def plot_step(self, batch, batch_idx):
         global_step = self.global_step
         if (
-            global_step % self.hparams.every_plot_step != 0
-            or self.local_rank != 0
+            # global_step % self.hparams.every_plot_step != 0
+            # or 
+            self.local_rank != 0
             or torch.distributed.get_rank() != 0
             or torch.cuda.current_device() != 0
         ):
