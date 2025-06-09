@@ -66,6 +66,7 @@ class Pipeline(LightningModule):
         # step 1: load model
         acestep_pipeline = ACEStepPipeline(checkpoint_dir)
         acestep_pipeline.load_checkpoint(acestep_pipeline.checkpoint_dir)
+        print("Checkpoint Loaded!")
 
         transformers = acestep_pipeline.ace_step_transformer.float().cpu()
         transformers.enable_gradient_checkpointing()
@@ -82,10 +83,12 @@ class Pipeline(LightningModule):
             lora_config = LoraConfig(**lora_config)
             transformers.add_adapter(adapter_config=lora_config, adapter_name=adapter_name)
             self.adapter_name = adapter_name
+            print("Loaded LoRA with config: ", lora_config)
 
         self.transformers = transformers
 
         self.dcae = acestep_pipeline.music_dcae.float().cpu()
+        # dcae frozen
         self.dcae.requires_grad_(False)
 
         self.text_encoder_model = acestep_pipeline.text_encoder_model.float().cpu()
