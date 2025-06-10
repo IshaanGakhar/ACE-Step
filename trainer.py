@@ -92,6 +92,7 @@ class Pipeline(LightningModule):
         self.dcae.requires_grad_(False)
 
         self.text_encoder_model = acestep_pipeline.text_encoder_model.float().cpu()
+        # frozen t5-Base encoder
         self.text_encoder_model.requires_grad_(False)
         self.text_tokenizer = acestep_pipeline.text_tokenizer
 
@@ -125,6 +126,7 @@ class Pipeline(LightningModule):
                 self.mert_model = AutoModel.from_pretrained(
                     "m-a-p/MERT-v1-330M", trust_remote_code=True, cache_dir=checkpoint_dir
                 ).eval()
+            # frozen MeRT
             self.mert_model.requires_grad_(False)
             self.resampler_mert = torchaudio.transforms.Resample(
                 orig_freq=48000, new_freq=24000
@@ -134,6 +136,7 @@ class Pipeline(LightningModule):
             )
 
             self.hubert_model = AutoModel.from_pretrained("utter-project/mHuBERT-147").eval()
+            # frozen HuBeRT
             self.hubert_model.requires_grad_(False)
             self.resampler_mhubert = torchaudio.transforms.Resample(
                 orig_freq=48000, new_freq=16000
