@@ -495,10 +495,9 @@ class ACEStepTransformer2DModel(
                 est_ssl_hidden_state = projector(inner_hidden_state)
                 # 3. projection loss
                 bs = inner_hidden_state.shape[0]
-                proj_loss = 0.0
-                for i, (z, z_tilde) in enumerate(
-                    zip(ssl_hidden_state, est_ssl_hidden_state)
-                ):
+                loss_list = []
+
+                for i, (z, z_tilde) in enumerate(zip(ssl_hidden_state, est_ssl_hidden_state)):
                     # 2. interpolate
                     z_tilde = (
                         F.interpolate(
@@ -513,10 +512,13 @@ class ACEStepTransformer2DModel(
 
                     z_tilde = torch.nn.functional.normalize(z_tilde, dim=-1)
                     z = torch.nn.functional.normalize(z, dim=-1)
-                    # T x d -> T x 1 -> 1
+
                     target = torch.ones(z.shape[0], device=z.device)
-                    proj_loss += self.cosine_loss(z, z_tilde, target)
-                proj_losses.append((ssl_name, proj_loss / bs))
+                    loss_list.append(self.cosine_loss(z, z_tilde, target))
+
+                if loss_list:
+                    proj_loss = torch.stack(loss_list).mean()
+                    proj_losses.append((ssl_name, proj_loss / bs))
 
         output = self.final_layer(hidden_states, embedded_timestep, output_length)
         if not return_dict:
