@@ -580,18 +580,20 @@ class Pipeline(LightningModule):
             prog_bar=True,
         )
 
-        total_proj_loss = 0.0
+        total_proj_loss = None
         for k, v in proj_losses:
             self.log(
                 f"{prefix}/{k}_loss", v, on_step=True, on_epoch=False, prog_bar=True
             )
-            total_proj_loss += v
+            if total_proj_loss is None:
+                total_proj_loss = v
+            else:
+                total_proj_loss = total_proj_loss + v
 
-        if len(proj_losses) > 0:
+        if total_proj_loss is not None:
             total_proj_loss = total_proj_loss / len(proj_losses)
+            loss = loss + total_proj_loss * self.ssl_coeff
 
-        loss = loss + total_proj_loss * self.ssl_coeff
-        self.log(f"{prefix}/loss", loss, on_step=True, on_epoch=False, prog_bar=True)
 
         # Log learning rate if scheduler exists
         if self.lr_schedulers() is not None:
