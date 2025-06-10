@@ -68,7 +68,8 @@ class Pipeline(LightningModule):
         acestep_pipeline.load_checkpoint(acestep_pipeline.checkpoint_dir)
         print("Checkpoint Loaded!")
 
-        transformers = acestep_pipeline.ace_step_transformer.float().cpu()
+        # TODO: why is the transformer on CPU?
+        transformers = acestep_pipeline.ace_step_transformer.float().cuda()
         transformers.enable_gradient_checkpointing()
 
         assert lora_config_path is not None, "Please provide a LoRA config path"
@@ -139,6 +140,7 @@ class Pipeline(LightningModule):
             # frozen HuBeRT
             self.hubert_model.requires_grad_(False)
             self.resampler_mhubert = torchaudio.transforms.Resample(
+                # TODO: investigate frequency conversion and its effects
                 orig_freq=48000, new_freq=16000
             )
             self.processor_mhubert = Wav2Vec2FeatureExtractor.from_pretrained(
@@ -603,6 +605,8 @@ class Pipeline(LightningModule):
             )
         # with torch.autograd.detect_anomaly():
         #     self.manual_backward(loss)
+        print("Loss requires_grad:", loss.requires_grad)
+    
         return loss
 
     def training_step(self, batch, batch_idx):
