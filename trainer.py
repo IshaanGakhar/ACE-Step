@@ -64,7 +64,7 @@ class Pipeline(LightningModule):
         self.scheduler = self.get_scheduler()
 
         # step 1: load model
-        acestep_pipeline = ACEStepPipeline(checkpoint_dir)
+        acestep_pipeline = ACEStepPipeline(checkpoint_dir, torch_compile=True)
         acestep_pipeline.load_checkpoint(acestep_pipeline.checkpoint_dir)
         print("Checkpoint Loaded!")
 
