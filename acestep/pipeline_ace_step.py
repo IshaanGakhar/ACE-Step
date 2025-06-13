@@ -249,6 +249,9 @@ class ACEStepPipeline:
         for param in self.ace_step_transformer.parameters():
             assert param.dtype == torch.float16, "ACE-Step transformer dtype is float16"
 
+        for name, param in self.ace_step_transformer.named_parameters():
+            assert param.requires_grad, f"{name} is frozen!"
+
         # compile
         if self.torch_compile:
             if export_quantized_weights:
