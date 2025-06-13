@@ -236,6 +236,18 @@ class ACEStepPipeline:
         )
         self.loaded = True
 
+        print("ACE-step dtype: ", self.ace_step_transformer.dtype)
+        for param in self.ace_step_transformer.parameters():
+            assert param.dtype == torch.float16, "ACE-Step transformer dtype is OFF"
+
+        print("TEXT-ENC dtype: ", self.text_encoder_model.dtype)
+        for param in self.text_encoder_model.parameters():
+            assert param.dtype == torch.float16, "TEXT-ENC transformer dtype is OFF"
+
+        print("MUSIC-DCAE dtype: ", self.music_dcae.dtype)
+        for param in self.music_dcae.parameters():
+            assert param.dtype == torch.float16, "MUSIC-DCAE transformer dtype is OFF"
+
         # compile
         if self.torch_compile:
             if export_quantized_weights:
