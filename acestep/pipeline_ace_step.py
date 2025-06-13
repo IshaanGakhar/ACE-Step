@@ -125,6 +125,7 @@ class ACEStepPipeline:
         )
         if device.type == "cpu" and torch.backends.mps.is_available():
             device = torch.device("mps")
+        # TODO: Investigate. Changed to float16 from bfloat16
         self.dtype = torch.float16 if dtype == "bfloat16" else torch.float32
         if device.type == "mps" and self.dtype == torch.bfloat16:
             self.dtype = torch.float16
@@ -238,15 +239,15 @@ class ACEStepPipeline:
 
         print("TEXT-ENC dtype: ", self.text_encoder_model.dtype)
         for param in self.text_encoder_model.parameters():
-            assert param.dtype == torch.float16, "TEXT-ENC transformer dtype is OFF"
+            assert param.dtype == torch.float16, "TEXT-ENC transformer dtype is not float16"
 
         print("MUSIC-DCAE dtype: ", self.music_dcae.dtype)
         for param in self.music_dcae.parameters():
-            assert param.dtype == torch.float16, "MUSIC-DCAE transformer dtype is OFF"
+            assert param.dtype == torch.float16, "MUSIC-DCAE transformer dtype is float16"
 
         print("ACE-step dtype: ", self.ace_step_transformer.dtype)
         for param in self.ace_step_transformer.parameters():
-            assert param.dtype == torch.float16, "ACE-Step transformer dtype is OFF"
+            assert param.dtype == torch.float16, "ACE-Step transformer dtype is float16"
 
         # compile
         if self.torch_compile:
