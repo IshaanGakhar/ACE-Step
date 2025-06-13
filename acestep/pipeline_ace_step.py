@@ -1476,6 +1476,7 @@ class ACEStepPipeline:
         if audio2audio_enable and ref_audio_input is not None:
             task = "audio2audio"
 
+        print("SELF.LOAD IS: ", self.loaded)
         if not self.loaded:
             logger.warning("Checkpoint not loaded, loading checkpoint...")
             if self.quantized:
