@@ -1479,8 +1479,10 @@ class ACEStepPipeline:
         if not self.loaded:
             logger.warning("Checkpoint not loaded, loading checkpoint...")
             if self.quantized:
+                print("Loading Quantized model")
                 self.load_quantized_checkpoint(self.checkpoint_dir)
             else:
+                print("Loading non-quantized model")
                 self.load_checkpoint(self.checkpoint_dir)
 
         self.load_lora(lora_name_or_path, lora_weight)
