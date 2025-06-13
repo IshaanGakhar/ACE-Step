@@ -125,7 +125,7 @@ class ACEStepPipeline:
         )
         if device.type == "cpu" and torch.backends.mps.is_available():
             device = torch.device("mps")
-        self.dtype = torch.bfloat16 if dtype == "bfloat16" else torch.float32
+        self.dtype = torch.float16 if dtype == "bfloat16" else torch.float32
         if device.type == "mps" and self.dtype == torch.bfloat16:
             self.dtype = torch.float16
         if device.type == "mps":
@@ -247,7 +247,7 @@ class ACEStepPipeline:
         print("ACE-step dtype: ", self.ace_step_transformer.dtype)
         for param in self.ace_step_transformer.parameters():
             assert param.dtype == torch.float16, "ACE-Step transformer dtype is OFF"
-            
+
         # compile
         if self.torch_compile:
             if export_quantized_weights:
